@@ -6,3 +6,9 @@
 /pkg/
 /spec/reports/
 /tmp/
+
+# Ignore sql downloads
+*.sql
+
+# Ignore config.json
+config.json

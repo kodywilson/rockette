@@ -1,0 +1,120 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'json'
+require 'optparse'
+require 'rest-client'
+#require 'rockette'
+
+@conf = JSON.parse(File.read('config.json'))
+
+# Export application on APEX instance
+def create_export(body, url)
+  response = RestClient.post url, body
+  response
+rescue StandardError => e
+  # change these, send back the error message, don't puts it!
+  puts "Unable to create export because #{e.message}" # puts error
+end
+
+# Grab application export from APEX instance
+def grab_export(url)
+  response = RestClient.get url
+rescue StandardError => e
+  puts "Unable to grab export because #{e.message}" # puts error
+end
+
+# Import application export into APEX instance
+def import_app(url, body)
+  response = RestClient.post url, body
+rescue StandardError => e
+  puts "Unable to import application because #{e.message}" # puts error
+end
+
+# Push attachment to api endpoint and show code
+def push_blob(filey, headers, url)
+  response = RestClient.post url, filey, headers
+  response
+rescue StandardError => e
+  puts "Unable to push file because #{e.message}" # puts error
+end
+
+# Parse all the flags and switches sent to the app
+options = {}
+OptionParser.new do |opts|
+  opts.on('-a', '--appid APPID', 'Export or update this APEX application. See mode flag.') do |appid|
+    unless appid.to_i > 1
+      raise ArgumentError, "Application ID must be a number."
+    end
+    options[:appid] = appid
+  end
+  opts.on('-f', '--file FILE', 'Select file to push for deployment. See mode flag.') do |file|
+    unless File.exists? file
+      raise ArgumentError, "Please choose a valid export to deploy."
+    end
+    options[:file] = file
+  end
+  opts.on('-m', '--mode MODE', 'Choose export to download application. Choose deploy to update one.') do |mode|
+    unless mode == "deploy" || mode == "export"
+      raise ArgumentError, "Supported functions include export and deploy."
+    end
+    options[:mode] = mode
+  end
+  opts.on('-u', '--url URL', 'The deployment url you would like to use.') do |urly|
+    unless urly =~ /^https:\/\/\w+.\w+/
+      raise ArgumentError, "URL must be valid and start with https."
+    end
+    options[:urly] = urly
+  end
+end.parse!
+
+if options[:urly] && options[:appid] && options[:mode]
+  puts "You selected mode: #{options[:mode]} App ID: #{options[:appid]} and URL: #{options[:urly]}"
+  filey = "f#{options[:appid]}.sql"
+  # Check if mode is deploy or export
+  if options[:mode] == "export"
+    # Mode is export. First create export file on APEX instance.
+    body = {
+      "app_id" => options[:appid]
+    }
+    export_url = options[:urly] + 'deploy/app_export'
+    export = create_export(body, export_url)
+    if export.code == 201 # Check if export was successfully created first
+      sleep 1 # Change to query api to see if file is there
+      export_url = export_url + '/' + filey
+      response = grab_export(export_url)
+      # Now write file if export was grabbed.
+      if response.code == 200 || response.code == 201
+        File.open(filey, 'wb') {|file| file.write(response.body)}
+        puts "Downloaded #{filey} and all done here."
+      end
+    end
+  end
+  if options[:mode] == "deploy"
+    unless options[:file]
+      puts "You must choose a file to deploy."
+      exit
+    end
+    # First push the chosen export file to the target system.
+    # rand(1..10)
+    push_hdrs = @conf["push_hdrs"]
+    push_hdrs["file_name"] = filey
+    push_url = options[:urly] + 'data_loader/blob'
+    pusher = push_blob(File.open(filey), push_hdrs, push_url)
+    # If push was successful, request application import
+    if pusher.code == 200 || pusher.code == 201
+      sleep 1 # replace with check for file on server
+      puts "Pushed #{filey} and attempting import now..."
+      body = @conf["deploy_body"]
+      body["app_id_src"] = options[:appid]
+      body["app_id_tgt"] = options[:appid]
+      body["app_id_tgt"] = "0" #test app copy
+      deploy = import_app(options[:urly] + 'deploy/app', body)
+      puts deploy.code
+      puts deploy.headers
+      puts deploy.body
+    end
+  end
+else
+  puts 'You did not make a selection for mode, app id, and url.'
+end
