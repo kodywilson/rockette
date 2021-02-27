@@ -12,9 +12,9 @@ Gem::Specification.new do |spec|
   spec.description   = "Rockette helps deploy and export APEX applications."
   spec.homepage      = "https://github.com/kodywilson/rockette"
   spec.license       = "MIT"
-  spec.required_ruby_version = Gem::Requirement.new(">= 2.4.0")
+  spec.required_ruby_version = Gem::Requirement.new(">= 2.5.0")
 
-  #spec.metadata["allowed_push_host"] = "TODO: Set to 'http://mygemserver.com'"
+  spec.metadata["allowed_push_host"] = "https://rubygems.org"
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = spec.homepage
@@ -29,8 +29,12 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
+  # Dev dependencies
+  spec.add_development_dependency "pry", "~> 0.0"
+  
   # Uncomment to register a new dependency of your gem
   spec.add_dependency "rest-client", "~> 2.0"
+  spec.add_dependency "thor", "~> 1.0"
 
   # For more information and examples about making a new gem, checkout our
   # guide at: https://bundler.io/guides/creating_gem.html

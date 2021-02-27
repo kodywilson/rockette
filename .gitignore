@@ -7,8 +7,7 @@
 /spec/reports/
 /tmp/
 
-# Ignore sql downloads
+# Additional things to ignore
 *.sql
-
-# Ignore config.json
 config.json
+*.gem

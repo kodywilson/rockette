@@ -1,8 +1,6 @@
 # Rockette
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/rockette`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Rockette was designed to aid you in exporting and importing APEX applications.
 
 ## Installation
 
@@ -22,7 +20,8 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Run rockette export to create and download an exported application file.
+Run rockette deploy to push and import an application export.
 
 ## Development
 
