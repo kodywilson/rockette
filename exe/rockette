@@ -1,9 +1,10 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require 'rockette'
+
 lib_path = File.expand_path('../lib', __dir__)
 $:.unshift(lib_path) if !$:.include?(lib_path)
-require 'rockette/cli'
 
 CONF = JSON.parse(File.read('config.json'))
 ENV["THOR_SILENCE_DEPRECATION"] = "true"
