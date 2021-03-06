@@ -50,7 +50,20 @@ module Rockette
         error_text("cookie", @url.to_s, 'auth/session')
       end
     end
-  
+
+    # use rest-client with retry
+    def rest_try
+      3.times { |i|
+        response = make_call
+        break response if (200..299).include? response.code
+        break response if i >= 2
+        puts "Failed #{@meth} on #{@url}, retry...#{i + 1}"
+        sleep 3
+      }
+    end
+
+  private
+
     def error_text(method_name, url, wanted)
       response = {
         "response" =>
@@ -65,17 +78,6 @@ module Rockette
       response = {
         "response" => JSON.parse(response.body),
         "status" => response.code.to_i
-      }
-    end
-
-    # use rest-client with retry
-    def rest_try
-      3.times { |i|
-        response = make_call
-        break response if (200..299).include? response.code
-        break response if i >= 2
-        puts "Failed #{@meth} on #{@url}, retry...#{i + 1}"
-        sleep 3
       }
     end
   
