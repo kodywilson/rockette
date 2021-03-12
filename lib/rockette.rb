@@ -18,11 +18,13 @@ module Rockette
       'put'    => :Put
     }
   
-    def initialize(headers: {}, meth: 'Get', params: {}, url: 'https://array/')
+    def initialize(headers: {}, meth: 'Get', params: {}, url: 'https://array/', config: {})
       @headers = headers
       @meth    = meth
       @params  = params
       @url     = url
+      @config = config
+      @config["timeout"] = @config["timeout"] ||= 30
     end
   
     def make_call
@@ -31,9 +33,13 @@ module Rockette
         response = RestClient::Request.execute(headers: @headers,
                                                method: VERBS[@meth.downcase],
                                                payload: @params,
-                                               timeout: 30,
+                                               timeout: @config["timeout"],
                                                url: @url,
                                                verify_ssl: false)
+      rescue SocketError => e
+        puts "Socket error, no route to host."
+        puts "#{e.class}: #{e.message}"
+        response = nil
       rescue => e
         e.response
       else
@@ -55,10 +61,13 @@ module Rockette
     def rest_try
       3.times { |i|
         response = make_call
-        break response if (200..299).include? response.code
-        break response if i >= 2
+        unless response == nil
+          break response if (200..299).include? response.code
+          break response if i > 1
+        end
         puts "Failed #{@meth} on #{@url}, retry...#{i + 1}"
-        sleep 3
+        sleep 3 unless i > 1
+        return nil if i > 1 # Handles socket errors, etc. where there is no response.
       }
     end
 

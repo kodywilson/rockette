@@ -12,11 +12,16 @@ module Rockette
       def execute(input: $stdin, output: $stdout)
         # Create and download export
         app_url = @options[:url] + 'deploy/apps/' + @options[:app_id]
-        check = Rester.new(headers: {}, meth: 'Get', params: {}, url: app_url).rest_try
-        if check.code == 200
-          puts "Found application id: #{@options[:app_id]}, proceeding..."
+        check = Rester.new(url: app_url).rest_try
+        unless check == nil
+          if check.code == 200
+            puts "Found application id: #{@options[:app_id]}, proceeding..."
+          else
+            puts "Could not find app id: #{@options[:app_id]}, expected: 200, but received: #{check.code}"
+            exit 1
+          end
         else
-          puts "Could not find app id: #{@options[:app_id]}, expected: 200, but received: #{check.code}"
+          puts "Bailing, unable to check for application. Can you access the url from here?"
           exit 1
         end
         output.puts "OK, exporting and downloading App ID: #{@options[:app_id]}"
@@ -25,7 +30,7 @@ module Rockette
           "app_id" => @options[:app_id]
         }
         export_url = @options[:url] + 'deploy/app_export'
-        export = Rester.new(headers: {}, meth: 'Post', params: body, url: export_url).rest_try
+        export = Rester.new(meth: 'Post', params: body, url: export_url).rest_try
         if export.code == 201 # Check if export was successfully created first
           sleep 1 # Just try a couple of times if needed then bail on error
           export_url = export_url + '/' + filey
