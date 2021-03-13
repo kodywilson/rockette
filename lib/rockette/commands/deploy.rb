@@ -32,19 +32,32 @@ module Rockette
         push_hdrs = CONF["push_hdrs"]
         push_hdrs["file_name"] = filey
         push_url = @options[:url] + 'data_loader/blob'
-        pusher = push_blob(File.open(filey), push_hdrs, push_url)
+        pusher = Rester.new(headers: push_hdrs, meth: 'Post', params: File.open(filey), url: push_url).rest_try
+        #pusher = push_blob(File.open(filey), push_hdrs, push_url)
         # If push was successful, request application import
-        if pusher.code == 200 || pusher.code == 201
-          sleep 1 # replace with check for file on server
-          puts "Pushed #{filey} and attempting import now..."
-          body = CONF["deploy_body"]
-          body["app_id_src"] = @options[:app_id]
-          body["app_id_tgt"] = @options[:app_id]
-          body["app_id_tgt"] = "0" #test app copy
-          deploy = import_app(@options[:url] + 'deploy/app', body)
-          puts deploy.code
-          puts deploy.headers
-          puts deploy.body
+        unless pusher == nil
+          if pusher.code == 200 || pusher.code == 201
+            sleep 1 # replace with check for file on server
+            puts "Pushed #{filey} and attempting import now..."
+            body = CONF["deploy_body"]
+            body["app_id_src"] = @options[:app_id]
+            body["app_id_tgt"] = @options[:app_id]
+            #body["app_id_tgt"] = "0" #test app copy
+            url = @options[:url] + 'deploy/app'
+            deploy = Rester.new(meth: 'Post', params: body, url: url).rest_try
+            #deploy = import_app(@options[:url] + 'deploy/app', body)
+            unless deploy == nil
+              puts deploy.code
+              puts deploy.headers
+              puts deploy.body
+            else
+              bail_text
+              exit 1
+            end
+          end
+        else
+          bail_text
+          exit 1
         end
       end
     end

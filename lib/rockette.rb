@@ -4,6 +4,7 @@ require           'json'
 require           'rest-client'
 require           'thor'
 require_relative  'rockette/cli'
+require_relative  'rockette/text'
 require_relative  'rockette/version'
 
 module Rockette

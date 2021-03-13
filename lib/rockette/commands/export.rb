@@ -21,7 +21,7 @@ module Rockette
             exit 1
           end
         else
-          puts "Bailing, unable to check for application. Can you access the url from here?"
+          bail_text
           exit 1
         end
         output.puts "OK, exporting and downloading App ID: #{@options[:app_id]}"
@@ -31,20 +31,30 @@ module Rockette
         }
         export_url = @options[:url] + 'deploy/app_export'
         export = Rester.new(meth: 'Post', params: body, url: export_url).rest_try
-        if export.code == 201 # Check if export was successfully created first
-          sleep 1 # Just try a couple of times if needed then bail on error
-          export_url = export_url + '/' + filey
-          snag_export = Rester.new(headers: {}, meth: 'Get', params: {}, url: export_url).rest_try
-          # Now write file if export was grabbed.
-          if snag_export.code == 200 || snag_export.code == 201
-            File.open(filey, 'wb') {|file| file.write(snag_export.body)}
-            puts "Downloaded #{filey} and all done here."
+        unless export == nil
+          if export.code == 201 # Check if export was successfully created first
+            sleep 1 # Just try a couple of times if needed then bail on error
+            export_url = export_url + '/' + filey
+            snag_export = Rester.new(url: export_url).rest_try
+            unless snag_export == nil
+              # Now write file if export was grabbed.
+              if snag_export.code == 200 || snag_export.code == 201
+                File.open(filey, 'wb') {|file| file.write(snag_export.body)}
+                puts "Downloaded #{filey} and all done here."
+              else
+                puts "Download failed for #{filey}!"
+              end
+            else
+              bail_text
+              exit 1
+            end
           else
-            puts "Download failed for #{filey}!"
+            puts "Unable to create application export for App ID: #{@options[:app_id]}!"
+            # puts more error info here, like code at least.
           end
         else
-          puts "Unable to create application export for App ID: #{@options[:app_id]}!"
-          # puts more error info here, like code at least.
+          bail_text
+          exit 1
         end
       end
     end
