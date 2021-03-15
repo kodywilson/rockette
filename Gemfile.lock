@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rockette (0.0.0)
+    rockette (0.0.1)
       rest-client (~> 2.0)
       thor (~> 1.0)
 
