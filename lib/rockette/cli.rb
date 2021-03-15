@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-# require 'json'
-# require 'rest-client'
-# require 'thor'
-
 module Rockette
   #
   # @api public

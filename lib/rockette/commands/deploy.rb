@@ -30,9 +30,11 @@ module Rockette
             url = @options[:url] + 'deploy/app'
             deploy = Rester.new(meth: 'Post', params: body, url: url).rest_try
             unless deploy == nil
-              puts deploy.code
-              puts deploy.headers
-              puts deploy.body
+              if deploy.code == 200
+                puts
+                puts "Successfully deployed file: #{filey} to target app id: #{@options[:app_id]}"
+                puts
+              end
             else
               bail_text
               exit 1
