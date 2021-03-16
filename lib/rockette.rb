@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
+require           "erb"
 require           "json"
+require           "psych"
 require           "rest-client"
 require           "thor"
 require_relative  "rockette/cli"

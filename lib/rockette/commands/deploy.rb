@@ -31,7 +31,8 @@ module Rockette
         push_hdrs["file_name"] = @filey
         push_url = "#{@options[:url]}data_loader/blob"
         # Push the chosen export file to the target system
-        response = Rester.new(headers: push_hdrs, meth: "Post", params: File.open(@filey), url: push_url).rest_try
+        filey = File.join(EXPORT_DIR, @filey)
+        response = Rester.new(headers: push_hdrs, meth: "Post", params: File.open(filey), url: push_url).rest_try
         bail unless response
         abort padder("Error. Got back response code: #{response.code}") unless (200..201).include? response.code
         response
@@ -46,7 +47,7 @@ module Rockette
         # If push was successful, request application import
         sleep 1
         importer
-        output.puts padder("Deployed and imported #{@filey} to target APEX instance")
+        output.puts padder("Deployed #{@filey} to target APEX instance: #{@options[:url]}")
       end
     end
   end
