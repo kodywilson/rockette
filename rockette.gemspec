@@ -31,7 +31,7 @@ Gem::Specification.new do |spec|
 
   # Dev dependencies
   spec.add_development_dependency "pry", "~> 0.0"
-  
+
   # Uncomment to register a new dependency of your gem
   spec.add_dependency "rest-client", "~> 2.0"
   spec.add_dependency "thor", "~> 1.0"

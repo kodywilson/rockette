@@ -1,46 +1,55 @@
 # frozen_string_literal: true
 
-require_relative '../command'
+require_relative "../command"
 
 module Rockette
   module Commands
+    # Export and download APEX application
     class Export < Rockette::Command
+      include TextHelper
+
       def initialize(options)
+        super()
         @options = options
+        @filey = "f#{@options[:app_id]}.sql"
+      end
+
+      def checker
+        app_url = "#{@options[:url]}deploy/apps/#{@options[:app_id]}"
+        response = Rester.new(url: app_url).rest_try
+        bail unless response
+        abort padder("App ID: #{@options[:app_id]}, not found. Received: #{response.code}") unless response.code == 200
+      end
+
+      def exporter
+        checker
+        puts padder("Found Application ID: #{@options[:app_id]}, proceeding...")
+        body = { "app_id" => @options[:app_id] }
+        export_url = "#{@options[:url]}deploy/app_export"
+        response = Rester.new(meth: "Post", params: body, url: export_url).rest_try
+        bail unless response
+        abort padder("Export failed for App ID: #{@options[:app_id]}.") unless (200..201).include? response.code
+        response
+      end
+
+      def grabber
+        export_url = "#{@options[:url]}deploy/app_export/#{@filey}"
+        response = Rester.new(url: export_url).rest_try
+        bail unless response
+        abort padder("Download failed for App ID: #{@options[:app_id]}.") unless (200..201).include? response.code
+        response
       end
 
       def execute(input: $stdin, output: $stdout)
+        check_input(input)
         # Create and download export
-        app_url = @options[:url] + 'deploy/apps/' + @options[:app_id]
-        check = Rester.new(headers: {}, meth: 'Get', params: {}, url: app_url).rest_try
-        if check.code == 200
-          puts "Found application id: #{@options[:app_id]}, proceeding..."
-        else
-          puts "Could not find app id: #{@options[:app_id]}, expected: 200, but received: #{check.code}"
-          exit 1
-        end
-        output.puts "OK, exporting and downloading App ID: #{@options[:app_id]}"
-        filey = "f#{@options[:app_id]}.sql"
-        body = {
-          "app_id" => @options[:app_id]
-        }
-        export_url = @options[:url] + 'deploy/app_export'
-        export = Rester.new(headers: {}, meth: 'Post', params: body, url: export_url).rest_try
-        if export.code == 201 # Check if export was successfully created first
-          sleep 1 # Just try a couple of times if needed then bail on error
-          export_url = export_url + '/' + filey
-          snag_export = Rester.new(headers: {}, meth: 'Get', params: {}, url: export_url).rest_try
-          # Now write file if export was grabbed.
-          if snag_export.code == 200 || snag_export.code == 201
-            File.open(filey, 'wb') {|file| file.write(snag_export.body)}
-            puts "Downloaded #{filey} and all done here."
-          else
-            puts "Download failed for #{filey}!"
-          end
-        else
-          puts "Unable to create application export for App ID: #{@options[:app_id]}!"
-          # puts more error info here, like code at least.
-        end
+        exporter
+        output.puts padder("Export created, downloading...")
+        sleep 1
+        response = grabber
+        # Write file if export was grabbed.
+        File.open(File.join(EXPORT_DIR, @filey), "wb") { |file| file.write(response.body) }
+        output.puts padder("Finished downloading #{@filey}. Have a good one!")
       end
     end
   end
