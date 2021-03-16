@@ -9,3 +9,5 @@
 
 - Unify rest calls into Rester class
 - Improve exception handling including socket errors
+- Switch to yaml for config
+- Use ~/.rockette as consistent location for config and exports
