@@ -22,6 +22,7 @@ Or install it yourself as:
 
 Run rockette export to create and download an exported application file.
 Run rockette deploy to push and import an application export.
+Run rockette help or rockette 'command' help for more information.
 
 ## Development
 
