@@ -35,7 +35,7 @@ module Rockette
       response = RestClient::Request.execute(headers: @headers,
                                              method: VERBS[@meth.downcase], payload: @params,
                                              timeout: @config["timeout"], url: @url, verify_ssl: false)
-    rescue SocketError => e
+    rescue SocketError, IOError => e
       puts "#{e.class}: #{e.message}"
       nil
     rescue StandardError => e

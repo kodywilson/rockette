@@ -11,13 +11,14 @@ module Rockette
       def initialize(options)
         super()
         @options = options
-        @filey = "f#{@options[:app_id]}.sql"
+        @filey = @options[:file]
       end
 
       def importer
         body = CONF["deploy_body"]
         body["app_id_src"] = @options[:app_id]
-        body["app_id_tgt"] = @options[:app_id]
+        body["app_id_tgt"] = @options[:copy] ? 0 : @options[:app_id]
+        body["blob_url"]  = @filey
         # body["app_id_tgt"] = "0" #test app copy
         url = "#{@options[:url]}deploy/app"
         response = Rester.new(meth: "Post", params: body, url: url).rest_try
@@ -31,7 +32,7 @@ module Rockette
         push_hdrs["file_name"] = @filey
         push_url = "#{@options[:url]}data_loader/blob"
         # Push the chosen export file to the target system
-        filey = File.join(EXPORT_DIR, @filey)
+        filey = File.join(EXPORT_DIR, @filey) if File.exist?(File.join(EXPORT_DIR, @filey))
         response = Rester.new(headers: push_hdrs, meth: "Post", params: File.open(filey), url: push_url).rest_try
         bail unless response
         abort padder("Error. Got back response code: #{response.code}") unless (200..201).include? response.code
