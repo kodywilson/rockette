@@ -23,7 +23,9 @@ module Rockette
     option :file, aliases: "-f", required: true,
                   desc: "Provide an APEX application export file (.sql)"
     option :url, aliases: "-u", required: true,
-                 desc: "Provide a valid url"
+                 desc: "Provide a valid APEX deployment url"
+    option :copy, aliases: "-c", required: false,
+                  desc: "Use this flag if you are copying an application instead of overwriting"
     def deploy(*)
       if options[:help]
         invoke :help, ["deploy"]
