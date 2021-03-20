@@ -5,7 +5,9 @@ require           "json"
 require           "psych"
 require           "rest-client"
 require           "thor"
+require           "tty-prompt"
 require_relative  "rockette/cli"
+require_relative  "rockette/controller"
 require_relative  "rockette/text_helper"
 require_relative  "rockette/version"
 
@@ -56,8 +58,8 @@ module Rockette
     end
 
     # use rest-client with retry
-    def rest_try
-      3.times do |i|
+    def rest_try(tries = 3)
+      tries.times do |i|
         response = make_call
         unless response.nil?
           break response if (200..299).include? response.code
