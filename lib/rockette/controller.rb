@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'controller/configurator'
+require_relative "controller/configurator"
 # require_relative 'deployer'
 
 module Rockette
@@ -9,13 +9,16 @@ module Rockette
   class Controller
     def initialize
       @conf = Psych.load(File.read(CONF))
+      @pastel = Pastel.new
       @prompt = TTY::Prompt.new
     end
 
     def launch!
       introduction
 
-      do_action("configure", []) if @conf["rockette"]["check_for_url"]
+      if @conf["rockette"]["check_for_url"] && @conf["rockette"]["controller_url"].length < 10
+        Rockette::Configurator.new.first_run
+      end
 
       # input/action loop
       loop do
@@ -30,16 +33,21 @@ module Rockette
     private
 
     def introduction
-      puts "-" * 60
-      puts "Rockette".upcase.center(60)
-      puts "-" * 60
-      puts "This is an interactive program to help export and deploy APEX applications."
+      font = TTY::Font.new(:starwars)
+      puts "-" * 85
+      puts
+      puts @pastel.yellow(font.write("Rockette"))
+      puts
+      puts "-" * 85
+      puts "Rockette helps export and deploy APEX applications."
+      puts
     end
 
     def conclusion
-      puts "-" * 60
-      puts "Have a good one!".upcase.center(60)
-      puts "-" * 60
+      puts
+      puts "-" * 85
+      puts @pastel.yellow("Have a good one!".upcase.center(85))
+      puts "-" * 85
       puts
     end
 
@@ -59,7 +67,6 @@ module Rockette
       when "export"
         puts "Export"
       when "configure"
-        puts "Configure"
         Rockette::Configurator.new.configure
       else
         puts "\nI don't understand that command.\n\n"

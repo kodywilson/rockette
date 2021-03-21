@@ -2,9 +2,12 @@
 
 require           "erb"
 require           "json"
+require           "pastel"
 require           "psych"
 require           "rest-client"
 require           "thor"
+require           "tty-config"
+require           "tty-font"
 require           "tty-prompt"
 require_relative  "rockette/cli"
 require_relative  "rockette/controller"
