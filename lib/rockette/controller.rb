@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# require_relative 'configurator'
+require_relative 'controller/configurator'
 # require_relative 'deployer'
 
 module Rockette
@@ -8,13 +8,14 @@ module Rockette
   # Manage Rockette in interactive mode
   class Controller
     def initialize
+      @conf = Psych.load(File.read(CONF))
       @prompt = TTY::Prompt.new
     end
 
     def launch!
       introduction
 
-      do_action("configure", []) if CONF["rockette"]["check_for_url"]
+      do_action("configure", []) if @conf["rockette"]["check_for_url"]
 
       # input/action loop
       loop do
@@ -59,6 +60,7 @@ module Rockette
         puts "Export"
       when "configure"
         puts "Configure"
+        Rockette::Configurator.new.configure
       else
         puts "\nI don't understand that command.\n\n"
       end

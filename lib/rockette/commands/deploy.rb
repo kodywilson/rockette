@@ -12,7 +12,8 @@ module Rockette
         super()
         @options = options
         @filey = @options[:file]
-        @body = CONF["deploy_body"]
+        @conf = Psych.load(File.read(CONF))
+        @body = @conf["deploy_body"]
         @body["app_id_src"] = "1" # @options[:app_id]
         @body["app_id_tgt"] = @options[:copy] ? 0 : @options[:app_id]
         @body["blob_url"] = @filey
@@ -34,7 +35,7 @@ module Rockette
       end
 
       def pusher
-        push_hdrs = CONF["push_hdrs"]
+        push_hdrs = @conf["push_hdrs"]
         push_hdrs["file_name"] = @filey
         push_url = "#{@options[:url]}data_loader/blob"
         # Push the chosen export file to the target system
