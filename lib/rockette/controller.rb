@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 require_relative "controller/configurator"
+require_relative "controller/exporter"
 require_relative "controller/viewer"
 
 module Rockette
-  MAIN_ACTIONS = {"🔭  View Resources" => 1, "🚀  Deploy" => 2, "📥  Export" => 3,
-                  "🛠   Configure" => 4, "❌  Quit" => 5}.freeze
+  MAIN_ACTIONS = { "🔭  View Resources" => 1, "🚀  Deploy" => 2, "📥  Export" => 3,
+                   "🛠   Configure" => 4, "❌  Quit" => 5 }.freeze
   # Manage Rockette in interactive mode
   class Controller
     def initialize
@@ -53,7 +54,7 @@ module Rockette
     end
 
     def actions
-      response = @prompt.select("What would you like to do?", MAIN_ACTIONS)
+      @prompt.select("What would you like to do?", MAIN_ACTIONS)
     end
 
     def do_action(action)
@@ -64,7 +65,8 @@ module Rockette
       when 2
         puts "Deploy"
       when 3
-        puts "Export"
+        exporter = Rockette::Exporter.new
+        exporter.launch!
       when 4
         Rockette::Configurator.new.configure
       else
