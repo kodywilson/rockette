@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
 require_relative "controller/configurator"
-# require_relative 'deployer'
+require_relative "controller/viewer"
 
 module Rockette
-  VALID_ACTIONS = %w[view deploy export configure quit].freeze
+  MAIN_ACTIONS = {"🔭  View Resources" => 1, "🚀  Deploy" => 2, "📥  Export" => 3,
+                  "🛠   Configure" => 4, "❌  Quit" => 5}.freeze
   # Manage Rockette in interactive mode
   class Controller
     def initialize
@@ -22,10 +23,10 @@ module Rockette
 
       # input/action loop
       loop do
-        action, args = actions
-        break if action.downcase == "quit"
+        action = actions
+        break if action == 5
 
-        do_action(action, args)
+        do_action(action)
       end
       conclusion
     end
@@ -52,21 +53,19 @@ module Rockette
     end
 
     def actions
-      response = @prompt.select("What would you like to do?", VALID_ACTIONS)
-      args = response.downcase.strip.split
-      action = args.shift
-      [action, args]
+      response = @prompt.select("What would you like to do?", MAIN_ACTIONS)
     end
 
-    def do_action(action, _args)
+    def do_action(action)
       case action
-      when "view"
-        puts "View Applications, Environments, or Registered Applications"
-      when "deploy"
+      when 1
+        viewer = Rockette::Viewer.new
+        viewer.launch!
+      when 2
         puts "Deploy"
-      when "export"
+      when 3
         puts "Export"
-      when "configure"
+      when 4
         Rockette::Configurator.new.configure
       else
         puts "\nI don't understand that command.\n\n"

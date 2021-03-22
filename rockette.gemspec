@@ -39,6 +39,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency "tty-config", "~> 0.0"
   spec.add_dependency "tty-font", "~> 0.0"
   spec.add_dependency "tty-prompt", "~> 0.0"
+  spec.add_dependency "tty-spinner", "~> 0.0"
+  spec.add_dependency "tty-table", "~> 0.0"
 
   # For more information and examples about making a new gem, checkout our
   # guide at: https://bundler.io/guides/creating_gem.html

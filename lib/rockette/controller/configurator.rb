@@ -2,7 +2,7 @@
 
 module Rockette
   # Configure Rockette application
-  class Configurator < TTY::Config
+  class Configurator
     attr_reader :config
 
     def initialize
@@ -18,7 +18,7 @@ module Rockette
       @config ||= self.class.new.config
     end
 
-    def self.configure
+    def configure
       puts "Please enter a number."
       choice = gets.chomp
       puts "You chose #{choice}."
