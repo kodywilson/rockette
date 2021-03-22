@@ -48,21 +48,22 @@ module Rockette
       end
     end
 
-    def applications(url)
-      uri = "#{url}/apps"
+    def ape_e_i(uri)
       response = Rester.new(url: uri).rest_try
       bail unless response
       abort padder("#{uri} didn't work. Received: #{response.code}") unless response.code == 200
-      # @table_env = TTY::Table.new(header: ["Environment Name","API","Domain","Owner","Workspace"])
-      items = JSON.parse(response.body)["items"]
-      # items.each {|h| @table_env << [h["name"],h["deployment_api"],h["domain"],h["owner"],h["workspace"]]}
+      response
+    end
+
+    def applications(url)
+      uri = "#{url}/apps"
+      response = ape_e_i(uri)
+      JSON.parse(response.body)["items"]
     end
 
     def environments
       uri = "#{@conf["rockette"]["controller_url"]}deploy/environments/"
-      response = Rester.new(url: uri).rest_try
-      bail unless response
-      abort padder("#{uri} didn't work. Received: #{response.code}") unless response.code == 200
+      response = ape_e_i(uri)
       @table_env = TTY::Table.new(header: ["Environment Name", "API", "Domain", "Owner", "Workspace"])
       items = JSON.parse(response.body)["items"]
       items.each { |h| @table_env << [h["name"], h["deployment_api"], h["domain"], h["owner"], h["workspace"]] }
@@ -70,9 +71,7 @@ module Rockette
 
     def registered
       uri = "#{@conf["rockette"]["controller_url"]}deploy/registered_apps/"
-      response = Rester.new(url: uri).rest_try
-      bail unless response
-      abort padder("#{uri} didn't work. Received: #{response.code}") unless response.code == 200
+      response = ape_e_i(uri)
       @table_reg = TTY::Table.new(header: ["Registered Name", "Source App ID", "Source URI", "Target App ID",
                                            "Target URI"])
       JSON.parse(response.body)["items"].each do |h|
