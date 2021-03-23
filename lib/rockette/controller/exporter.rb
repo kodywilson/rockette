@@ -42,7 +42,6 @@ module Rockette
         puts padder("Saving under default file name: f#{app_id}.sql")
         options = Thor::CoreExt::HashWithIndifferentAccess.new "app_id" => app_id, "url" => url, "force" => true
       end
-      # require_relative "../commands/export"
       Rockette::Commands::Export.new(options).execute
       puts
     end
@@ -53,8 +52,7 @@ module Rockette
       loop do
         apps = Rockette::Viewer.new.applications(apps_url)
         list = list_builder(apps)
-        #action = @prompt.select("Which application would you like to download?", list)
-        action = @prompt.slider("Download application => ", list)
+        action = @prompt.slider("Download application => ", list, default: 1)
         break if action == list.length
 
         app_id = apps[action - 1]["application_id"]
