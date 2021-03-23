@@ -37,6 +37,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "rest-client", "~> 2.0"
   spec.add_dependency "thor", "~> 1.0"
   spec.add_dependency "tty-config", "~> 0.0"
+  spec.add_dependency "tty-editor", "~> 0.0"
   spec.add_dependency "tty-font", "~> 0.0"
   spec.add_dependency "tty-prompt", "~> 0.0"
   spec.add_dependency "tty-spinner", "~> 0.0"
