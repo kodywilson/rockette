@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 require_relative "controller/configurator"
+require_relative "controller/deployer"
 require_relative "controller/exporter"
 require_relative "controller/viewer"
+require_relative "text_helper"
 
 module Rockette
   MAIN_ACTIONS = { "🔭  View Resources" => 1, "🚀  Deploy" => 2, "📥  Export" => 3,
@@ -19,7 +21,8 @@ module Rockette
       introduction
 
       if @conf["rockette"]["check_for_url"] && @conf["rockette"]["controller_url"].length < 10
-        Rockette::Configurator.new.first_run
+        configurer = Rockette::Configurator.new
+        configurer.first_run
       end
 
       # input/action loop
@@ -63,12 +66,14 @@ module Rockette
         viewer = Rockette::Viewer.new
         viewer.launch!
       when 2
-        puts "Deploy"
+        deployer = Rockette::Deployer.new
+        deployer.launch!
       when 3
         exporter = Rockette::Exporter.new
         exporter.launch!
       when 4
-        Rockette::Configurator.new.configure
+        configurer = Rockette::Configurator.new
+        configurer.launch!
       else
         puts "\nI don't understand that command.\n\n"
       end
