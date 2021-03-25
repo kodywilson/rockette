@@ -32,15 +32,14 @@ module Rockette
     end
 
     def do_export(app_id, apps_url)
-      url = apps_url[0...-7]
       response = @prompt.yes?("Would you like to enter a filename for the export?")
       if response == true
         file = @prompt.ask("Please enter your desired filename:")
-        options = Thor::CoreExt::HashWithIndifferentAccess.new "app_id" => app_id, "url" => url, "file" => file,
+        options = Thor::CoreExt::HashWithIndifferentAccess.new "app_id" => app_id, "url" => apps_url, "file" => file,
                                                                "force" => true
       else
         puts padder("Saving under default file name: f#{app_id}.sql")
-        options = Thor::CoreExt::HashWithIndifferentAccess.new "app_id" => app_id, "url" => url, "force" => true
+        options = Thor::CoreExt::HashWithIndifferentAccess.new "app_id" => app_id, "url" => apps_url, "force" => true
       end
       Rockette::Commands::Export.new(options).execute
       puts

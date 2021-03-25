@@ -56,7 +56,7 @@ module Rockette
     end
 
     def applications(url)
-      uri = "#{url}/apps"
+      uri = "#{url}deploy/apps"
       response = ape_e_i(uri)
       JSON.parse(response.body)["items"]
     end
