@@ -23,3 +23,7 @@
 - Improved handling of copy and file switches
 - Check /usr/app for Docker
 - Add interactive mode
+- Add configuration option to interactive mode
+- Add resource viewer mode to interactive
+- Add exporter option to interactive
+- Add deployer mode to interactive

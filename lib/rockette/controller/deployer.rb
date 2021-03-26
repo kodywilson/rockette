@@ -25,6 +25,7 @@ module Rockette
         break if response == 3
 
         add_app if response == 1
+        updater if response == 2
       end
       puts
     end
@@ -45,6 +46,10 @@ module Rockette
       puts padder("Let's choose an export to add")
       file = choose_file
       url = choose_env
+      puts padder("You chose to add #{file} to the environment at #{url}")
+      puts
+      return unless @prompt.yes?("Proceed with the deployment?")
+
       options = Thor::CoreExt::HashWithIndifferentAccess.new "app_id" => "0", "url" => url, "file" => file,
                                                              "force" => true
       Rockette::Commands::Deploy.new(options).execute
@@ -52,26 +57,22 @@ module Rockette
     end
 
     def choose_app(apps_url)
-      loop do
-        apps = Rockette::Viewer.new.applications(apps_url)
-        list = list_builder(apps)
-        action = @prompt.slider("Download application => ", list, default: 1)
-        break if action == list.length
+      apps = Rockette::Viewer.new.applications(apps_url)
+      list = list_builder(apps)
+      action = @prompt.slider("Application to update => ", list, default: 1)
 
-        app_id = apps[action - 1]["application_id"]
-        do_export(app_id, apps_url)
-      end
+      apps[action - 1]
     end
 
     def choose_env
       enviros = Rockette::Viewer.new.environments
       list = list_builder(enviros)
-      action = @prompt.select("Which environment do you want to add the application?", list)
+      action = @prompt.select("Which environment?", list)
       enviros[action - 1]["deployment_api"]
     end
 
     def choose_file
-      list = Dir.entries(EXPORT_DIR).each { |f| next if [".", ".."].include?(f) }
+      list = Dir.children(EXPORT_DIR)
       @prompt.select("Which export from #{EXPORT_DIR}?", list)
     end
 
@@ -84,6 +85,22 @@ module Rockette
       end
       names << "Go Back"
       names.map.with_index { |n, x| [n, x + 1] }.to_h
+    end
+
+    def updater
+      puts padder("Please choose the export with your updated application code")
+      file = choose_file
+      url = choose_env
+      app = choose_app(url)
+      puts "Application: #{app["application_name"]} | App ID: #{app["application_id"]} | Env URI: #{url}"
+      puts "will be updated with the code from export: #{file}"
+      puts
+      return unless @prompt.yes?("Proceed with the deployment?")
+
+      options = Thor::CoreExt::HashWithIndifferentAccess.new "app_id" => app["application_id"], "url" => url,
+                                                             "file" => file, "force" => true
+      Rockette::Commands::Deploy.new(options).execute
+      puts
     end
   end
 end
