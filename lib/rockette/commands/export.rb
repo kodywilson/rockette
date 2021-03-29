@@ -48,8 +48,9 @@ module Rockette
         sleep 1
         response = grabber
         # Write file if export was grabbed.
-        File.open(File.join(EXPORT_DIR, @filey), "wb") { |file| file.write(response.body) }
-        output.puts padder("Finished downloading #{@filey}. Have a good one!")
+        save_file = @options[:file] || @filey
+        File.open(File.join(EXPORT_DIR, save_file), "wb") { |file| file.write(response.body) }
+        output.puts padder("Finished downloading #{save_file}. Have a good one!")
       end
     end
   end

@@ -17,3 +17,13 @@
 - Add copy switch to deploy command
 - Use file name passed via -f switch
 - Try to find export file and let caller know if file not found
+
+## [0.0.3] - In progress
+
+- Improved handling of copy and file switches
+- Check /usr/app for Docker
+- Add interactive mode
+- Add configuration option to interactive mode
+- Add resource viewer mode to interactive
+- Add exporter option to interactive
+- Add deployer mode to interactive

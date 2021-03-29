@@ -3,23 +3,6 @@
 
 require "rockette"
 
-app_path = File.join(Dir.home, ".rockette")
-lib_path = File.expand_path("../lib", __dir__)
-tem_path = File.expand_path("../templates", __dir__)
-$LOAD_PATH.unshift(lib_path) unless $LOAD_PATH.include?(lib_path)
-
-Dir.mkdir(app_path) unless File.exist?(app_path)
-unless File.exist?(File.join(app_path, "config.yml"))
-  template = File.read(File.join(tem_path, "config.yml.erb"))
-  data = ERB.new(template).result(binding)
-  File.write(File.join(app_path, "config.yml"), data)
-end
-Dir.mkdir(File.join(app_path, "exports")) unless File.exist?(File.join(app_path, "exports"))
-
-CONF = Psych.load(File.read(File.join(app_path, "config.yml")))
-ENV["THOR_SILENCE_DEPRECATION"] = "true"
-EXPORT_DIR = File.join(app_path, "exports")
-
 Signal.trap("INT") do
   warn("\n#{caller.join("\n")}: interrupted")
   exit(1)

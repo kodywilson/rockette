@@ -19,6 +19,12 @@ module TextHelper
     exit
   end
 
+  def no_rockette_dir
+    puts "Unable to locate a suitable place for the .rockette directory."
+    puts "Please double check your home directory..."
+    exit
+  end
+
   def padder(str)
     "\n#{str}\n"
   end

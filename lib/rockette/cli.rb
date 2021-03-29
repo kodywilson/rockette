@@ -18,10 +18,10 @@ module Rockette
     desc "deploy", "Deploy chosen export file to target APEX instance"
     method_option :help, aliases: "-h", type: :boolean,
                          desc: "Display usage information"
-    option :app_id, aliases: "-a", required: true,
-                    desc: "Provide an APEX application ID"
+    option :app_id, aliases: "-a", default: "0",
+                    desc: "Update this App ID with export set by '-f' Leave off or pass '-c' to copy export to target"
     option :file, aliases: "-f", required: true,
-                  desc: "Provide an APEX application export file (.sql)"
+                  desc: "Provide an APEX application export file (sql)"
     option :url, aliases: "-u", required: true,
                  desc: "Provide a valid APEX deployment url"
     option :copy, aliases: "-c", required: false,
@@ -42,6 +42,9 @@ module Rockette
                     desc: "Provide an APEX application ID"
     option :url, aliases: "-u", required: true,
                  desc: "Provide a valid url"
+    option :file, aliases: "-f", required: false,
+                  desc: "Save export with this file name"
+
     def export(*)
       if options[:help]
         invoke :help, ["export"]
@@ -51,9 +54,9 @@ module Rockette
       end
     end
 
-    desc "config", "Command description..."
+    desc "config", "Set configuration options..."
     method_option :help, aliases: "-h", type: :boolean,
-                         desc: "Display usage information"
+                         desc: "Not implemented yet..."
     def config(*)
       if options[:help]
         invoke :help, ["config"]
@@ -62,5 +65,19 @@ module Rockette
         Rockette::Commands::Config.new(options).execute
       end
     end
+
+    desc "interactive", "Start Rockette in interactive mode"
+    method_option :help, aliases: "-h", type: :boolean,
+                         desc: "'rockette' by itself will start interactive mode"
+    def interactive(*)
+      if options[:help]
+        invoke :help, ["interactive"]
+      else
+        require_relative "commands/interactive"
+        Rockette::Commands::Interactive.new(options).execute
+      end
+    end
+
+    default_task :interactive
   end
 end
