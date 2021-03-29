@@ -32,7 +32,7 @@ Gem::Specification.new do |spec|
   # Dev dependencies
   spec.add_development_dependency "pry", "~> 0.0"
 
-  # Register a new dependency of your gem
+  # Dependencies
   spec.add_dependency "pastel", "~> 0.0"
   spec.add_dependency "rest-client", "~> 2.0"
   spec.add_dependency "thor", "~> 1.0"
@@ -43,6 +43,4 @@ Gem::Specification.new do |spec|
   spec.add_dependency "tty-spinner", "~> 0.0"
   spec.add_dependency "tty-table", "~> 0.0"
 
-  # For more information and examples about making a new gem, checkout our
-  # guide at: https://bundler.io/guides/creating_gem.html
 end

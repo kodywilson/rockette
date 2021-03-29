@@ -23,7 +23,7 @@ unless File.exist?(File.join(APP_PATH, "config.yml"))
 end
 Dir.mkdir(File.join(APP_PATH, "exports")) unless File.exist?(File.join(APP_PATH, "exports"))
 
-# Load config and set constants
+# Set config and export directory paths
 CONF = File.join(APP_PATH, "config.yml")
 ENV["THOR_SILENCE_DEPRECATION"] = "true"
 EXPORT_DIR = File.join(APP_PATH, "exports")
