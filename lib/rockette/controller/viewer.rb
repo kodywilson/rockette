@@ -36,12 +36,12 @@ module Rockette
         @spinner.auto_spin
         sleep(1)
         @spinner.stop
-        puts @table_env.render(:ascii)
+        puts @table_env.render(:unicode, resize: true, border: { style: :yellow })
         puts
       when 2
         puts
         registered unless @table_reg
-        puts @table_reg.render(:ascii)
+        puts @table_reg.render(:unicode, resize: true, border: { style: :yellow })
         puts
       else
         puts "\nI don't understand that command.\n\n"
