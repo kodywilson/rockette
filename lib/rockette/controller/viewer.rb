@@ -9,10 +9,12 @@ module Rockette
 
     def initialize
       @conf = Psych.load(File.read(CONF))
+      @environments = []
       @pastel = Pastel.new
       @prompt = TTY::Prompt.new
       @spinner = TTY::Spinner.new # ("[:spinner] Loading APEX environments ...", format: pulse_2)
-      @view_actions = { "🏔  APEX Environments" => 1, "🎭 Registered Applications" => 2, "⬅️  Go Back" => 3 }
+      @view_actions = { "🏔  APEX Environments" => 1, "🎭 Registered Applications" => 2,
+                        "🌎 Applications by Environment" => 3, "⬅️  Go Back" => 4 }
     end
 
     def launch!
@@ -22,7 +24,7 @@ module Rockette
       # input/action loop
       loop do
         action = @prompt.select("Which would you like to see?", @view_actions)
-        break if action == 3
+        break if action == 4
 
         do_action(action)
       end
@@ -36,12 +38,19 @@ module Rockette
         @spinner.auto_spin
         sleep(1)
         @spinner.stop
-        puts @table_env.render(:ascii)
+        puts @table_env.render(:unicode, resize: true, border: { style: :yellow })
         puts
       when 2
         puts
         registered unless @table_reg
-        puts @table_reg.render(:ascii)
+        puts @table_reg.render(:unicode, resize: true, border: { style: :yellow })
+        puts
+      when 3
+        puts
+        puts "This can take a while...hang tight!"
+        puts
+        all_apps unless @table_all_apps
+        puts @table_all_apps.render(:unicode, resize: true, border: { style: :yellow })
         puts
       else
         puts "\nI don't understand that command.\n\n"
@@ -76,6 +85,19 @@ module Rockette
                                            "Target URI"])
       JSON.parse(response.body)["items"].each do |h|
         @table_reg << [h["registered_name"], h["src_app_id"], h["src_url"], h["tgt_app_id"], h["tgt_url"]]
+      end
+    end
+
+    def all_apps
+      environments unless @table_env
+      @table_all_apps = TTY::Table.new(header: ["Environment Name", "Application Name", "Application ID"])
+      @table_env.each do |env|
+        next if env[0] == "Environment Name"
+
+        apps = applications(env[1])
+        apps.each do |app|
+          @table_all_apps << [env[0], app["application_name"], app["application_id"]]
+        end
       end
     end
   end

@@ -42,5 +42,4 @@ Gem::Specification.new do |spec|
   spec.add_dependency "tty-prompt", "~> 0.0"
   spec.add_dependency "tty-spinner", "~> 0.0"
   spec.add_dependency "tty-table", "~> 0.0"
-
 end
