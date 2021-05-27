@@ -3,7 +3,7 @@
 require_relative "requirements"
 
 # Set paths
-APP_PATH = if File.exist?(File.join("/", "usr", "app")) # Why Docker, why?
+APP_PATH = if File.exist?(File.join("/", "usr", "app"))
              File.join("/", "usr", "app", ".rockette")
            elsif File.exist?(Dir.home)
              File.join(Dir.home, ".rockette")
