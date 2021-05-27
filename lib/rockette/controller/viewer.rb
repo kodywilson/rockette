@@ -13,7 +13,7 @@ module Rockette
       @pastel = Pastel.new
       @prompt = TTY::Prompt.new
       @spinner = TTY::Spinner.new # ("[:spinner] Loading APEX environments ...", format: pulse_2)
-      @view_actions = { "🏔  APEX Environments" => 1, "🎭 Registered Applications" => 2, 
+      @view_actions = { "🏔  APEX Environments" => 1, "🎭 Registered Applications" => 2,
                         "🌎 Applications by Environment" => 3, "⬅️  Go Back" => 4 }
     end
 
@@ -46,6 +46,8 @@ module Rockette
         puts @table_reg.render(:unicode, resize: true, border: { style: :yellow })
         puts
       when 3
+        puts
+        puts "This can take a while...hang tight!"
         puts
         all_apps unless @table_all_apps
         puts @table_all_apps.render(:unicode, resize: true, border: { style: :yellow })
@@ -91,6 +93,7 @@ module Rockette
       @table_all_apps = TTY::Table.new(header: ["Environment Name", "Application Name", "Application ID"])
       @table_env.each do |env|
         next if env[0] == "Environment Name"
+
         apps = applications(env[1])
         apps.each do |app|
           @table_all_apps << [env[0], app["application_name"], app["application_id"]]
