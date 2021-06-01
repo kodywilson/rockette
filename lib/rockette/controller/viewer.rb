@@ -9,7 +9,6 @@ module Rockette
 
     def initialize
       @conf = Psych.load(File.read(CONF))
-      @environments = []
       @pastel = Pastel.new
       @prompt = TTY::Prompt.new
       @spinner = TTY::Spinner.new # ("[:spinner] Loading APEX environments ...", format: pulse_2)
@@ -35,9 +34,7 @@ module Rockette
       when 1
         puts
         environments unless @table_env
-        @spinner.auto_spin
-        sleep(1)
-        @spinner.stop
+        spinner(0.5)
         puts @table_env.render(:unicode, resize: true, border: { style: :yellow })
         puts
       when 2
@@ -100,5 +97,12 @@ module Rockette
         end
       end
     end
+
+    def spinner(dur=1)
+      @spinner.auto_spin
+      sleep(dur)
+      @spinner.stop
+    end
+
   end
 end
