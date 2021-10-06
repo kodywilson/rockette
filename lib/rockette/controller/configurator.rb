@@ -47,6 +47,18 @@ module Rockette
       end
     end
 
+    def add_controller_cred
+      puts "Now that you have entered a controller url, please enter the OAuth client credentials for the controller."
+      user = @prompt.ask("User:")
+      pass = @prompt.ask("Pass:")
+      basey = 'Basic ' + Base64.encode64(user + ":" + pass).tr("\n", "")
+      @config.set(:rockette, :controller_cred, value: basey)
+      @config.write(force: true)
+      refresh_conf
+      puts "Choose View Resources and then All Applications to automate adding client credentials for each environment."
+      puts "You will need these credentials to use Rockette to deploy, export, and update applications."
+    end
+
     def add_url
       uri = @prompt.ask("Please enter APEX deployment URI (base path):") do |u|
         u.validate(%r{^https://\w+.\w+})
@@ -70,6 +82,7 @@ module Rockette
       response = @prompt.yes?("Would you like to enter a URI?")
       if response == true
         add_url
+        add_controller_cred
       else
         response = @prompt.yes?("Would you like to disable these checks in the future?")
         @config.set(:rockette, :check_for_url, value: false) if response == true

@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
+require           "base64"
 require           "erb"
 require           "json"
+require           "oci"
 require           "pastel"
 require           "psych"
 require           "rest-client"

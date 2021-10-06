@@ -19,13 +19,13 @@ module Rockette
     method_option :help, aliases: "-h", type: :boolean,
                          desc: "Display usage information"
     option :app_id, aliases: "-a", default: "0",
-                    desc: "Update this App ID with export set by '-f' Leave off or pass '-c' to copy export to target"
+                    desc: "Update this App ID with export set by '-f' Omitting '-a' copies export to target"
     option :file, aliases: "-f", required: true,
                   desc: "Provide an APEX application export file (sql)"
     option :url, aliases: "-u", required: true,
                  desc: "Provide a valid APEX deployment url"
-    option :copy, aliases: "-c", required: false,
-                  desc: "Use this flag if you are copying an application instead of overwriting"
+    option :secret, aliases: "-s", required: false,
+                  desc: "Use this flag if you are using managed secrets"
     def deploy(*)
       if options[:help]
         invoke :help, ["deploy"]

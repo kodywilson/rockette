@@ -45,19 +45,20 @@ module Rockette
     def add_app
       puts padder("Let's choose an export to add")
       file = choose_file
-      url = choose_env
+      env = choose_env
+      url = env[0]
       puts padder("You chose to add #{file} to the environment at #{url}")
       puts
       return unless @prompt.yes?("Proceed with the deployment?")
 
       options = Thor::CoreExt::HashWithIndifferentAccess.new "app_id" => "0", "url" => url, "file" => file,
-                                                             "force" => true
+                                                             "cred" => env[1], "force" => true
       Rockette::Commands::Deploy.new(options).execute
       puts
     end
 
-    def choose_app(apps_url)
-      apps = Rockette::Viewer.new.applications(apps_url)
+    def choose_app(apps_url, cred)
+      apps = Rockette::Viewer.new.applications(apps_url, cred)
       list = list_builder(apps)
       action = @prompt.slider("Application to update => ", list, default: 1)
 
@@ -68,7 +69,7 @@ module Rockette
       enviros = Rockette::Viewer.new.environments
       list = list_builder(enviros)
       action = @prompt.select("Which environment?", list)
-      enviros[action - 1]["deployment_api"]
+      [enviros[action - 1]["deployment_api"], enviros[action - 1]["web_cred"]]
     end
 
     def choose_file
@@ -90,15 +91,16 @@ module Rockette
     def updater
       puts padder("Please choose the export with your updated application code")
       file = choose_file
-      url = choose_env
-      app = choose_app(url)
+      env = choose_env
+      url = env[0]
+      app = choose_app(url, env[1])
       puts "Application: #{app["application_name"]} | App ID: #{app["application_id"]} | Env URI: #{url}"
       puts "will be updated with the code from export: #{file}"
       puts
       return unless @prompt.yes?("Proceed with the deployment?")
 
       options = Thor::CoreExt::HashWithIndifferentAccess.new "app_id" => app["application_id"], "url" => url,
-                                                             "file" => file, "force" => true
+                                                             "cred" => env[1], "file" => file, "force" => true
       Rockette::Commands::Deploy.new(options).execute
       puts
     end

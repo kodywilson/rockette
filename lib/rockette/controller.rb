@@ -44,6 +44,9 @@ module Rockette
       puts @pastel.yellow(font.write("Rockette"))
       puts
       puts "-" * 85
+      puts "Version: " + VERSION
+      puts "-" * 14
+      puts
       puts "Rockette helps export and deploy APEX applications."
       puts
     end

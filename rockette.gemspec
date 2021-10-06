@@ -33,6 +33,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "pry", "~> 0.0"
 
   # Dependencies
+  spec.add_dependency "oci", "~> 2.0"
   spec.add_dependency "pastel", "~> 0.0"
   spec.add_dependency "rest-client", "~> 2.0"
   spec.add_dependency "thor", "~> 1.0"
