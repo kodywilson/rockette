@@ -1,20 +1,9 @@
 ---
-push_hdrs:
-  Content-Type: application/json
-  created_by: dcs_automation
-  message_date: ''
-  msg_from_addr: ''
-  msg_from_name: ''
-  file_charset: UTF-8
-  file_mimetype: text/plain
-  file_name: ''
-  file_type: sql
-  tags: ''
-  target_use: push_deployment
-deploy_body:
-  app_id_src: ''
-  app_id_tgt: ''
-  blob_url: https://local.data_loader
+token_body:
+  grant_type: client_credentials
+token_hdrs:
+  Content-Type: application/x-www-form-urlencoded
 rockette:
   check_for_url: true
+  controller_cred: ''
   controller_url: ''

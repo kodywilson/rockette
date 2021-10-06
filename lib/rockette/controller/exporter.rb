@@ -27,19 +27,20 @@ module Rockette
         break if action == list.length
 
         apps_url = enviros[action - 1]["deployment_api"]
-        choose_app(apps_url)
+        cred = enviros[action - 1]["web_cred"]
+        choose_app(apps_url, cred)
       end
     end
 
-    def do_export(app_id, apps_url)
+    def do_export(app_id, apps_url, cred)
       response = @prompt.yes?("Would you like to enter a filename for the export?")
       if response == true
         file = @prompt.ask("Please enter your desired filename:")
-        options = Thor::CoreExt::HashWithIndifferentAccess.new "app_id" => app_id, "url" => apps_url, "file" => file,
-                                                               "force" => true
+        options = Thor::CoreExt::HashWithIndifferentAccess.new "app_id" => app_id, "url" => apps_url, "cred" => cred,
+                                                               "file" => file, "force" => true
       else
         puts padder("Saving under default file name: f#{app_id}.sql")
-        options = Thor::CoreExt::HashWithIndifferentAccess.new "app_id" => app_id, "url" => apps_url, "force" => true
+        options = Thor::CoreExt::HashWithIndifferentAccess.new "app_id" => app_id, "url" => apps_url, "cred" => cred, "force" => true
       end
       Rockette::Commands::Export.new(options).execute
       puts
@@ -47,15 +48,15 @@ module Rockette
 
     protected
 
-    def choose_app(apps_url)
+    def choose_app(apps_url, cred)
       loop do
-        apps = Rockette::Viewer.new.applications(apps_url)
+        apps = Rockette::Viewer.new.applications(apps_url, cred)
         list = list_builder(apps)
         action = @prompt.slider("Download application => ", list, default: 1)
         break if action == list.length
 
         app_id = apps[action - 1]["application_id"]
-        do_export(app_id, apps_url)
+        do_export(app_id, apps_url, cred)
       end
     end
 
