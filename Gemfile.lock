@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rockette (0.0.5)
+    rockette (0.0.6)
       oci (~> 2.0)
       pastel (~> 0.0)
       rest-client (~> 2.0)
@@ -110,4 +110,4 @@ DEPENDENCIES
   rubocop (~> 1.7)
 
 BUNDLED WITH
-   2.2.11
+   2.2.28

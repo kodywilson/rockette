@@ -46,6 +46,7 @@ module Rockette
       puts padder("Let's choose an export to add")
       file = choose_file
       env = choose_env
+      return if env == -1
       url = env[0]
       puts padder("You chose to add #{file} to the environment at #{url}")
       puts
@@ -61,6 +62,7 @@ module Rockette
       apps = Rockette::Viewer.new.applications(apps_url, cred)
       list = list_builder(apps)
       action = @prompt.slider("Application to update => ", list, default: 1)
+      return -1 if action == apps.count + 1
 
       apps[action - 1]
     end
@@ -69,6 +71,7 @@ module Rockette
       enviros = Rockette::Viewer.new.environments
       list = list_builder(enviros)
       action = @prompt.select("Which environment?", list)
+      return -1 if action == enviros.count + 1
       [enviros[action - 1]["deployment_api"], enviros[action - 1]["web_cred"]]
     end
 
@@ -92,8 +95,10 @@ module Rockette
       puts padder("Please choose the export with your updated application code")
       file = choose_file
       env = choose_env
+      return if env == -1
       url = env[0]
       app = choose_app(url, env[1])
+      return if app == -1
       puts "Application: #{app["application_name"]} | App ID: #{app["application_id"]} | Env URI: #{url}"
       puts "will be updated with the code from export: #{file}"
       puts
